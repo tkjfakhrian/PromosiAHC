@@ -6,3 +6,4 @@ python-math
 matplotlib
 scipy
 scikit-learn
+openpyxl
