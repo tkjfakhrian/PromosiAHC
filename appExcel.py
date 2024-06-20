@@ -81,8 +81,8 @@ class DBI(Data) :
             self.state['DataPenerimaan'] = pd.DataFrame()
 
     def RekomendasiDBI(self) :
-        self.judul_halaman()
-        try :
+            self.judul_halaman()
+        #try :
             DataPenerimaan = self.state['DataPenerimaan'] 
             results = {}
             for i in range(2,8) :
@@ -142,8 +142,8 @@ class DBI(Data) :
             st.write(f"- Rekomendasi Kelompok Ke-2 Memiliki Nilai DBI : **{second_smallest_value:.5f}** Sehingga Konten Promosi Dapat Dibuat Sebanyak : **{second_smallest_x}** Konten Promosi")
 
 
-        except :
-            st.write('Upload File Terlebih Dahulu')
+        #except :
+            #st.write('Upload File Terlebih Dahulu')
 
 class Promosi(Data) :
     def __init__(self) :
