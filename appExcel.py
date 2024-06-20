@@ -86,7 +86,7 @@ class DBI(Data) :
             DataPenerimaan = self.state['DataPenerimaan'] 
             results = {}
             for i in range(2,8) :
-                hc = AgglomerativeClustering(n_clusters=i, affinity='euclidean',linkage='ward')
+                hc = AgglomerativeClustering(n_clusters=i, linkage='ward')
                 y_hc = hc.fit_predict(DataPenerimaan)
                 db_index = davies_bouldin_score(DataPenerimaan,y_hc)
                 results.update({i:db_index})
