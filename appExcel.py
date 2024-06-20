@@ -198,8 +198,8 @@ class Promosi(Data) :
             st.dataframe(df_media.sort_values(by='Jmlh', ascending=False).head())
 
     def kelompok_promosi(self) :
-        self.judul_halaman()
-        try :
+            self.judul_halaman()
+        #try :
             DataPenerimaan = self.state['DataPenerimaan']
             data_encoded = pd.get_dummies(DataPenerimaan[['Sekolah', 'Provinsi', 'Fakultas', 'Prodi', 'Jalur Masuk', 'Televisi', 'Radio', 'Website', 'Facebook', 'Twitter', 'Instagram', 'Koran', 'Brosur', 'Billboard', 'Youtube', 'TikTok']]) 
 
@@ -231,8 +231,8 @@ class Promosi(Data) :
             else :
                 st.write('Mohon Masukkan Jumlah Simulasi Terlebih Dahulu')
 
-        except :
-            st.write('Upload File Terlebih Dahulu')         
+        #except :
+            #st.write('Upload File Terlebih Dahulu')         
 
 if __name__ == "__main__":
     # Create an instance of the main class
