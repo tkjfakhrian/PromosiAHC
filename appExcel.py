@@ -152,8 +152,8 @@ class Promosi(Data) :
             self.state['DataPenerimaan'] = pd.DataFrame()
 
         if 'smallest_x' not in self.state :
-            self.state['smallest_x'] = ' -'
-            self.state['second_smallest_x'] = ' -'
+            self.state['smallest_x'] = '-'
+            self.state['second_smallest_x'] = '-'
 
     def to_excel(self,df) :
         output = BytesIO()
