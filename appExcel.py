@@ -138,8 +138,8 @@ class DBI(Data) :
 
             #Kesimpulan
             st.write("### Kesimpulan :")
-            st.write(f"- Rekomendasi Kelompok Ke-1 Memiliki Nilai DBI : **{smallest_value:.5f}**, Sehingga Konten Promosi Dapat Dibuat Sebanyak : **{smallest_x}** Konten Promosi")
-            st.write(f"- Rekomendasi Kelompok Ke-2 Memiliki Nilai DBI : **{second_smallest_value:.5f}** Sehingga Konten Promosi Dapat Dibuat Sebanyak : **{second_smallest_x}** Konten Promosi")
+            st.write(f"- Rekomendasi Kelompok Ke-1 Memiliki Nilai DBI : **{smallest_value:.4f}**, Sehingga Konten Promosi Dapat Dibuat Sebanyak : **{smallest_x}** Konten Promosi")
+            st.write(f"- Rekomendasi Kelompok Ke-2 Memiliki Nilai DBI : **{second_smallest_value:.4f}** Sehingga Konten Promosi Dapat Dibuat Sebanyak : **{second_smallest_x}** Konten Promosi")
 
 
         except :
@@ -154,7 +154,23 @@ class Promosi(Data) :
         if 'smallest_x' not in self.state :
             self.state['smallest_x'] = '-'
             self.state['second_smallest_x'] = '-'
+    
+    def ahc_clustering(self,df,Jml_Cluster) :
+        data_encoded = pd.get_dummies(df[['Sekolah', 'Provinsi', 'Fakultas', 'Prodi', 'Jalur Masuk', 'Televisi', 'Radio', 'Website', 'Facebook', 'Twitter', 'Instagram', 'Koran', 'Brosur', 'Billboard', 'Youtube', 'TikTok']]) 
+        ahc = AgglomerativeClustering(n_clusters=Jml_Cluster, linkage='ward')
+        labels = ahc.fit_predict(data_encoded)
 
+        df['cluster'] = labels
+
+        #Encode
+        df['Sekolah'] = df['Sekolah'].replace([1,2,3,4,5,6,7,8],['SMA','SMK','MA','Pesantren','Home Schooling','PKBM','Konversi Univ','Paket C'])
+        df['Provinsi'] = df['Provinsi'].replace([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38],['Nanggroe Aceh Darussalam (NAD)','Sumatera Utara','Sumatera Selatan','Sumatera Barat','Bengkulu','Riau','Kepulauan Riau','Jambi','Lampung','Bangka Belitung','Kalimantan Barat','Kalimantan Timur','Kalimantan Selatan','Kalimantan Tengah','Kalimantan Utara','Banten','DKI Jakarta','Jawa Barat','Jawa Tengah','DI Yogyakarta','Jawa Timur','Bali','Nusa Tenggara Timur','Nusa Tenggara Barat','Gorontalo','Sulawesi Barat','Sulawesi Tengah','Sulawesi Utara','Sulawesi Tenggara','Sulawesi Selatan','Maluku Utara','Maluku','Papua Barat','Papua','Papua Selatan','Papua Tengah','Papua Pegunungan','Papua Barat Daya'])
+        df['Fakultas'] = df['Fakultas'].replace([1,2,3,4,5,6],['Teknik & Ilmu Komputer','Ekonomi dan Bisnis','Hukum','Ilmu Sosial & Ilmu Politik','Desain','Ilmu Budaya'])
+        df['Prodi'] = df['Prodi'].replace([1,2,3,4,5,6,8,9,10,30,31,11,12,13,14,15,16,17,18,43,19,20,21,37,38],['Teknik Informatika - S1','Sistem Komputer - S1','Teknik Industri - S1','Teknik Arsitektur - S1','Sistem Informasi - S1','Perencanaan Wilayah dan Kota - S1','Teknik Komputer - D3','Manajemen Informatika - D3','Komputerisasi Akuntansi - D3','Teknik Sipil - S1','Teknik Elektro - S1','Akuntansi - S1','Manajemen - S1','Akuntansi - D3','Manajemen Pemasaran - D3','Keuangan dan Perbankan - D3','Ilmu Hukum - S1','Ilmu Pemerintahan - S1','Ilmu Komunikasi - S1','Hubungan Internasional - S1','Desain Komunikasi Visual - S1','Desain Interior - S1','Desain Grafis - D3','Sastra Inggris - S1','Sastra Jepang - S1'])
+        df['Jalur Masuk'] = df['Jalur Masuk'].replace([1,2,3,4,5,6,7],['Prestasi','Rapor','KIP','Konversi','Peduli UNIKOM','PMDK','USM'])    
+
+        st.dataframe(df)
+    
     def to_excel(self,df) :
         output = BytesIO()
         writer = pd.ExcelWriter(output, engine='xlsxwriter')
@@ -171,19 +187,29 @@ class Promosi(Data) :
 
         #Expander Karakteristik
         with st.expander(f"Karakteristik Kelompok : **{kelompok+1}**") :
-            st.write('Karakteristik Sekolah')
-            sekolah = anggota_kelas['Sekolah'].value_counts()
-            st.dataframe(sekolah.head(3))
-
-            st.write('Karakteristik Provinsi')
-            provinsi = anggota_kelas['Provinsi'].value_counts()
-            st.dataframe(provinsi.head())
-
-            st.write('Karakteristik Prodi')
+            #list Prodi
             prodi = anggota_kelas['Prodi'].value_counts()
-            st.dataframe(prodi.head())
+            prodi_list = prodi.head().index.tolist()
+            prodi_str = ', '.join(prodi_list)
 
-            #Media
+            # Membuat Kalimat Representasi Prodi
+            st.write(f'Pada Kelompok **{kelompok+1}**, mahasiswa lebih banyak mendaftar pada prodi : **{prodi_str}**, dengan proporsi sebagai berikut :')
+
+            #Pie Chart Proporsi Prodi
+            cluster_counts = anggota_kelas['Prodi'].value_counts().head()
+
+            #Pie Chart Prodi
+            fig, ax = plt.subplots()
+            ax.pie(cluster_counts, labels=cluster_counts.index, autopct='%.2f %%', startangle=90)
+            ax.axis('equal') #Equal aspect ratio
+            st.pyplot(fig)
+
+            #list Provinsi
+            provinsi = anggota_kelas['Provinsi'].value_counts()
+            provinsi_list = provinsi.head().index.tolist()
+            provinsi_str = ', '.join(provinsi_list)
+            
+            #List Media
             Televisi =  anggota_kelas[(anggota_kelas['Televisi'] == 1)].shape[0]
             Radio =  anggota_kelas[(anggota_kelas['Radio'] == 1)].shape[0]
             Website =  anggota_kelas[(anggota_kelas['Website'] == 1)].shape[0]
@@ -198,32 +224,26 @@ class Promosi(Data) :
 
             media = {'Media' : ['Televisi','Radio','Website','Facebook','Twitter','Instagram','Koran','Brosur','Billboard','Youtube','TikTok'], 'Jmlh' : [Televisi,Radio,Website,Facebook,Twitter,Instagram,Koran,Brosur,Billboard,Youtube,Tiktok]}
             df_media = pd.DataFrame(media)
+            df_media = df_media.sort_values(by='Jmlh', ascending=False).head()
 
-            st.dataframe(df_media.sort_values(by='Jmlh', ascending=False).head())
+            media_list = df_media['Media'].tolist()
+            media_str =  ', '.join(media_list)
+
+            # Membuat Kalimat Representasi Provinsi dan Media
+            st.write(f'pendaftar lebih banyak berasal dari **{provinsi_str}**, mereka mengetahui UNIKOM dari : **{media_str}**')
+            st.write(f'Gunakan karakteristik konten seperti ini untuk konten promosi ke-{kelompok+1}')
 
     def kelompok_promosi(self) :
         self.judul_halaman()
         try :
             DataPenerimaan = self.state['DataPenerimaan']
-            data_encoded = pd.get_dummies(DataPenerimaan[['Sekolah', 'Provinsi', 'Fakultas', 'Prodi', 'Jalur Masuk', 'Televisi', 'Radio', 'Website', 'Facebook', 'Twitter', 'Instagram', 'Koran', 'Brosur', 'Billboard', 'Youtube', 'TikTok']]) 
-
+            
             st.write(f"Rekomendasi Jumlah Konten Ke-1 : **{self.state['smallest_x']}**, dan Rekomendasi Ke-2 : **{self.state['second_smallest_x']}**")
             jml_cluster = int(st.number_input('Masukkan Jumlah Konten Promosi Yang Akan Dibuat : '))
             if st.button('Simulasikan') and jml_cluster > 0:
+                #Pembentukan Kelompok Menggunakan AHC Clustering
+                self.ahc_clustering(DataPenerimaan,jml_cluster)
                 
-                ahc = AgglomerativeClustering(n_clusters=jml_cluster, linkage='ward')
-                labels = ahc.fit_predict(data_encoded)
-
-                DataPenerimaan['cluster'] = labels
-
-                #Encode
-                DataPenerimaan['Sekolah'] = DataPenerimaan['Sekolah'].replace([1,2,3,4,5,6,7,8],['SMA','SMK','MA','Pesantren','Home Schooling','PKBM','Konversi Univ','Paket C'])
-                DataPenerimaan['Provinsi'] = DataPenerimaan['Provinsi'].replace([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38],['Nanggroe Aceh Darussalam (NAD)','Sumatera Utara','Sumatera Selatan','Sumatera Barat','Bengkulu','Riau','Kepulauan Riau','Jambi','Lampung','Bangka Belitung','Kalimantan Barat','Kalimantan Timur','Kalimantan Selatan','Kalimantan Tengah','Kalimantan Utara','Banten','DKI Jakarta','Jawa Barat','Jawa Tengah','DI Yogyakarta','Jawa Timur','Bali','Nusa Tenggara Timur','Nusa Tenggara Barat','Gorontalo','Sulawesi Barat','Sulawesi Tengah','Sulawesi Utara','Sulawesi Tenggara','Sulawesi Selatan','Maluku Utara','Maluku','Papua Barat','Papua','Papua Selatan','Papua Tengah','Papua Pegunungan','Papua Barat Daya'])
-                DataPenerimaan['Fakultas'] = DataPenerimaan['Fakultas'].replace([1,2,3,4,5,6],['Teknik & Ilmu Komputer','Ekonomi dan Bisnis','Hukum','Ilmu Sosial & Ilmu Politik','Desain','Ilmu Budaya'])
-                DataPenerimaan['Prodi'] = DataPenerimaan['Prodi'].replace([1,2,3,4,5,6,8,9,10,30,31,11,12,13,14,15,16,17,18,43,19,20,21,37,38],['Teknik Informatika - S1','Sistem Komputer - S1','Teknik Industri - S1','Teknik Arsitektur - S1','Sistem Informasi - S1','Perencanaan Wilayah dan Kota - S1','Teknik Komputer - D3','Manajemen Informatika - D3','Komputerisasi Akuntansi - D3','Teknik Sipil - S1','Teknik Elektro - S1','Akuntansi - S1','Manajemen - S1','Akuntansi - D3','Manajemen Pemasaran - D3','Keuangan dan Perbankan - D3','Ilmu Hukum - S1','Ilmu Pemerintahan - S1','Ilmu Komunikasi - S1','Hubungan Internasional - S1','Desain Komunikasi Visual - S1','Desain Interior - S1','Desain Grafis - D3','Sastra Inggris - S1','Sastra Jepang - S1'])
-                DataPenerimaan['Jalur Masuk'] = DataPenerimaan['Jalur Masuk'].replace([1,2,3,4,5,6,7],['Prestasi','Rapor','KIP','Konversi','Peduli UNIKOM','PMDK','USM'])    
-
-                st.dataframe(DataPenerimaan)
                 #Download Ke Excel
                 excel_data = self.to_excel(DataPenerimaan)
                 st.download_button(label='Unduh Excel', data=excel_data, file_name='Hasil_Clustering.xlsx', mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
