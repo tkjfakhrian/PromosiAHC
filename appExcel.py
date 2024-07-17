@@ -186,7 +186,7 @@ class Promosi(Data) :
         st.write(f"- Kelompok : **{kelompok+1}**, Memiliki Anggota Sebanyak : **{len(anggota_kelas)}**")
 
         #Expander Karakteristik
-        with st.expander(f"Karakteristik Kelompok : **{kelompok+1}**") :
+        with st.expander(f"Karakteristik Untuk Konten Ke-**{kelompok+1}**") :
             #list Prodi
             prodi = anggota_kelas['Prodi'].value_counts()
             prodi_list = prodi.head().index.tolist()
@@ -240,7 +240,7 @@ class Promosi(Data) :
             
             st.write(f"Rekomendasi Jumlah Konten Ke-1 : **{self.state['smallest_x']}**, dan Rekomendasi Ke-2 : **{self.state['second_smallest_x']}**")
             jml_cluster = int(st.number_input('Masukkan Jumlah Konten Promosi Yang Akan Dibuat : '))
-            if st.button('Simulasikan') and jml_cluster > 0:
+            if st.button('Buat Konten') and jml_cluster > 0:
                 #Pembentukan Kelompok Menggunakan AHC Clustering
                 self.ahc_clustering(DataPenerimaan,jml_cluster)
                 
