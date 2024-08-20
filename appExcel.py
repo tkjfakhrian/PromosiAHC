@@ -205,6 +205,7 @@ class Promosi(Data) :
             st.pyplot(fig)
 
             #Treemap Prodi
+            st.write('Proporsi Program Studi Pada Brosur')
             fig, ax = plt.subplots(figsize=(10,6))
             squarify.plot(sizes=prodi_counts.values, label=prodi_counts.index, alpha=.8, ax=ax)
             st.pyplot(fig)
