@@ -209,6 +209,7 @@ class Promosi(Data) :
             st.write('Proporsi Program Studi Pada Brosur')
             fig, ax = plt.subplots(figsize=(10,6))
             squarify.plot(sizes=cluster_counts.values, label=cluster_counts.index, alpha=.8, ax=ax)
+            ax.axis('off')  # Menghilangkan sumbu
             st.pyplot(fig)
             
             #list Provinsi
