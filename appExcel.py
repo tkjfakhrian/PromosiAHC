@@ -4,6 +4,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import math
+import squarify
 
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics import davies_bouldin_score
