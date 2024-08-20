@@ -198,17 +198,18 @@ class Promosi(Data) :
 
             #Pie Chart Proporsi Prodi
             cluster_counts = anggota_kelas['Prodi'].value_counts().head()
+            colors = plt.get_cmap('Set3')(range(len(cluster_counts)))
 
             #Pie Chart Prodi
             fig, ax = plt.subplots()
-            ax.pie(cluster_counts, labels=cluster_counts.index, autopct='%.2f %%', startangle=90)
+            ax.pie(cluster_counts, labels=cluster_counts.index, autopct='%.2f %%', startangle=90, colors=colors)
             ax.axis('equal') #Equal aspect ratio
             st.pyplot(fig)
 
             #Treemap Prodi
             st.write('Proporsi Program Studi Pada Brosur')
             fig, ax = plt.subplots(figsize=(10,6))
-            squarify.plot(sizes=cluster_counts.values, label=cluster_counts.index, alpha=.8, ax=ax)
+            squarify.plot(sizes=cluster_counts.values, label=cluster_counts.index, color=colors, alpha=.8, ax=ax)
             ax.axis('off')  # Menghilangkan sumbu
             st.pyplot(fig)
             
