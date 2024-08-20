@@ -241,8 +241,8 @@ class Promosi(Data) :
             st.write(f'Gunakan karakteristik konten seperti ini untuk konten promosi ke-{kelompok+1}')
 
     def kelompok_promosi(self) :
-        self.judul_halaman()
-        try :
+        #self.judul_halaman()
+        #try :
             DataPenerimaan = self.state['DataPenerimaan']
             
             st.write(f"Rekomendasi Jumlah Konten Ke-1 : **{self.state['smallest_x']}**, dan Rekomendasi Ke-2 : **{self.state['second_smallest_x']}**")
@@ -262,8 +262,8 @@ class Promosi(Data) :
             else :
                 st.write('Mohon Masukkan Jumlah Simulasi Terlebih Dahulu')
 
-        except :
-            st.write('Upload File Terlebih Dahulu')         
+        #except :
+            #st.write('Upload File Terlebih Dahulu')         
 
 if __name__ == "__main__":
     # Create an instance of the main class
