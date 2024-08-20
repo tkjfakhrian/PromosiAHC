@@ -204,6 +204,11 @@ class Promosi(Data) :
             ax.axis('equal') #Equal aspect ratio
             st.pyplot(fig)
 
+            #Treemap Prodi
+            fig, ax = plt.subplots(figsize=(10,6))
+            squarify.plot(sizes=prodi_counts.values, label=prodi_counts.index, alpha=.8, ax=ax)
+            st.pyplot(fig)
+            
             #list Provinsi
             provinsi = anggota_kelas['Provinsi'].value_counts()
             provinsi_list = provinsi.head().index.tolist()
